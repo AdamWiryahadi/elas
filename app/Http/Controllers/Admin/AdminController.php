@@ -16,11 +16,13 @@ class AdminController extends Controller
 
     public function manageleave()
     {
-        // Fetch all leave requests with the associated user
-        $leaveRequests = LeaveRequest::with('user')->get();
+         // Fetch leave requests grouped by status
+    $pendingRequests = LeaveRequest::with('user')->where('status', 'pending')->get();
+    $approvedRequests = LeaveRequest::with('user')->where('status', 'approved')->get();
+    $rejectedRequests = LeaveRequest::with('user')->where('status', 'rejected')->get();
 
-        // Pass the data to the view
-        return view('admin.manageleave', compact('leaveRequests'));
+    // Pass the data to the view
+    return view('admin.manageleave', compact('pendingRequests', 'approvedRequests', 'rejectedRequests'));
         
     }
 
