@@ -33,12 +33,18 @@ Route::middleware(['auth', 'userMiddleware'])->group(function () {
 // admin routes
 Route::middleware(['auth', 'adminMiddleware'])->group(function(){
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/settings', [AdminController::class, 'settings'])->name('admin.settings');
+    Route::put('/admin/settings/update', [AdminController::class, 'updateSettings'])->name('admin.settings.update');
+    
     Route::get('/admin/manageleave', [AdminController::class, 'manageleave'])->name('admin.manageleave');
-    Route::get('/admin/manageuser', [AdminController::class, 'manageuser'])->name('admin.manageuser');
-    Route::delete('/admin/deleteuser/{id}', [AdminController::class, 'deleteUser'])->name('admin.deleteuser');
     Route::patch('/admin/approveleave/{id}', [AdminController::class, 'approveLeave'])->name('admin.approveleave');
     Route::patch('/admin/rejectleave/{id}', [AdminController::class, 'rejectLeave'])->name('admin.rejectleave');
 
+    Route::get('/admin/manageuser', [AdminController::class, 'manageuser'])->name('admin.manageuser');
+    Route::get('/admin/createuser', [AdminController::class, 'createUser'])->name('admin.createuser');
+    Route::delete('/admin/deleteuser/{id}', [AdminController::class, 'deleteUser'])->name('admin.deleteuser');
+    Route::get('/admin/createuser', [AdminController::class, 'createUser'])->name('admin.createuser');
+    Route::post('/admin/storeuser', [AdminController::class, 'storeUser'])->name('admin.storeuser');
 });
 
 require __DIR__.'/auth.php';

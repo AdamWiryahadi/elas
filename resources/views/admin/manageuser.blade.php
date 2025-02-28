@@ -1,63 +1,106 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Manage Users') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow-md rounded-lg p-6">
-                <h3 class="text-lg font-semibold mb-4">User Management</h3>
-
-                <!-- Display success or error messages -->
-                @if (session('success'))
-                    <div class="mb-4 p-4 bg-green-100 text-green-700 rounded">
-                        {{ session('success') }}
-                    </div>
-                @endif
-
-                @if (session('error'))
-                    <div class="mb-4 p-4 bg-red-100 text-red-700 rounded">
-                        {{ session('error') }}
-                    </div>
-                @endif
-
-                @if ($users->isEmpty())
-                    <p class="text-gray-500">No users found in the database.</p>
-                @else
-                    <table class="w-full border-collapse border border-gray-300">
-                        <thead>
-                            <tr class="bg-gray-200">
-                                <th class="px-4 py-2 border text-left font-medium">ID</th>
-                                <th class="px-4 py-2 border text-left font-medium">Name</th>
-                                <th class="px-4 py-2 border text-left font-medium">Email</th>
-                                <th class="px-4 py-2 border text-left font-medium">Role</th>
-                                <th class="px-4 py-2 border text-left font-medium">Created At</th>
-                                <th class="px-4 py-2 border text-center font-medium">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($users as $user)
-                                <tr class="hover:bg-gray-100">
-                                    <td class="px-4 py-2 border">{{ $user->id }}</td>
-                                    <td class="px-4 py-2 border">{{ $user->name }}</td>
-                                    <td class="px-4 py-2 border">{{ $user->email }}</td>
-                                    <td class="px-4 py-2 border">{{ $user->role }}</td>
-                                    <td class="px-4 py-2 border">{{ $user->created_at->format('Y-m-d') }}</td>
-                                    <td class="px-4 py-2 border text-center">
-                                        <form action="{{ route('admin.deleteuser', $user->id) }}" method="POST" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400">Delete</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @endif
+<x-admin-layout>
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">
+                        <i class="fas fa-users mr-2"></i> User Management
+                    </h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">User Management</li>
+                    </ol>
+                </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+
+    <!-- Main content -->
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row mb-4">
+                <!-- Admin Count Card -->
+                <div class="col-lg-4 col-6">
+                    <div class="small-box bg-info">
+                        <div class="inner">
+                            <h3>{{ $adminCount }}</h3>
+                            <p>Total Admins</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Count Card -->
+                <div class="col-lg-4 col-6">
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3>{{ $userCount }}</h3>
+                            <p>Total Users</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-primary card-outline">
+                        <div class="card-header d-flex align-items-center">
+                            <h3 class="card-title">Manage Users</h3>
+                            <a href="{{ route('admin.createuser') }}" class="btn btn-primary ms-auto">
+                                <i class="fas fa-user-plus"></i> Add New User
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            @if ($users->isEmpty())
+                                <p class="text-muted">No users found in the database.</p>
+                            @else
+                                <table class="table table-bordered table-striped">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th class="text-center">ID</th>
+                                            <th class="text-center">Name</th>
+                                            <th class="text-center">Email</th>
+                                            <th class="text-center">Role</th>
+                                            <th class="text-center">Created At</th>
+                                            <th class="text-center">Quota</th>
+                                            <th class="text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($users as $user)
+                                            <tr>
+                                                <td class="text-center">{{ $user->id }}</td>
+                                                <td class="text-center">{{ $user->name }}</td>
+                                                <td class="text-center">{{ $user->email }}</td>
+                                                <td class="text-center">{{ $user->role }}</td>
+                                                <td class="text-center">{{ $user->created_at->format('d-m-Y') }}</td>
+                                                <td class="text-center">
+                                                    {{ $settings->quota_enabled ? $user->quota : 'Unlimited' }}
+                                                </td>
+                                                <td class="text-center">
+                                                    <form action="{{ route('admin.deleteuser', $user->id) }}" method="POST" class="d-inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-admin-layout>

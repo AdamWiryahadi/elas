@@ -5,13 +5,19 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\LeaveRequest;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Auth; // Import the Auth facade
 
 class UserController extends Controller
 {
     public function index()
     {
-        return view('user.dashboard');
+        $user = Auth::user();
+        $allLeaveRequests = LeaveRequest::with('user')->get();
+        $quota = $user->quota ?? 'N/A'; // If user has no quota, show 'N/A'
+        $settings = Setting::first() ?? new Setting(); // Avoid errors if no settings exist
+
+        return view('user.dashboard', compact('settings', 'allLeaveRequests', 'quota'));
     }
 
     public function applyleave()
@@ -37,8 +43,17 @@ class UserController extends Controller
             'reason' => 'required|string|max:255',
         ]);
 
+        $user = Auth::user();
+        $settings = Setting::first(); // Fetch settings from the database
+
+        // Check if quota is enabled and if the user has remaining leave
+        if ($settings->quota_enabled && $user->quota <= 0) {
+            return redirect()->back()->with('error', 'You have no remaining leave quota.');
+        }
+
+        // Proceed with leave request creation
         LeaveRequest::create([
-            'user_id' => Auth::id(), // Replaced auth()->id() with Auth::id()
+            'user_id' => $user->id,
             'leave_type' => $request->leave_type,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
