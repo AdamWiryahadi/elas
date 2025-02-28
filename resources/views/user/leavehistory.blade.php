@@ -1,73 +1,84 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Leave History') }}
-        </h2>
-    </x-slot>
+<x-user-layout>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow-md rounded-lg p-6">
-                <h3 class="text-lg font-semibold mb-4">Your Leave Requests</h3>
-
-                @if (session('success'))
-                    <div class="mb-4 p-4 bg-green-100 text-green-800 rounded">
-                        {{ session('success') }}
-                    </div>
-                @endif
-
-                @if ($leaveRequests->isEmpty())
-                    <div class="text-gray-500">
-                        You have not submitted any leave requests yet.
-                    </div>
-                @else
-                    <table class="min-w-full border-collapse border border-gray-200">
-                        <thead>
-                            <tr class="bg-gray-50">
-                                <th class="px-4 py-2 border text-left">Start Date</th>
-                                <th class="px-4 py-2 border text-left">End Date</th>
-                                <th class="px-4 py-2 border text-left">Leave Type</th>
-                                <th class="px-4 py-2 border text-left">Reason</th>
-                                <th class="px-4 py-2 border text-left">Status</th>
-                                <th class="px-4 py-2 border text-left">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($leaveRequests as $leaveRequest)
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-4 py-2 border">{{ $leaveRequest->start_date }}</td>
-                                    <td class="px-4 py-2 border">{{ $leaveRequest->end_date }}</td>
-                                    <td class="px-4 py-2 border">{{ $leaveRequest->leave_type }}</td>
-                                    <td class="px-4 py-2 border">{{ $leaveRequest->reason }}</td>
-                                    <td class="px-4 py-2 border">
-                                        @if ($leaveRequest->status === 'pending')
-                                            <span class="text-yellow-500">Pending</span>
-                                        @elseif ($leaveRequest->status === 'approved')
-                                            <span class="text-green-500">Approved</span>
-                                        @else
-                                            <span class="text-red-500">Rejected</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-4 py-2 border">
-                                        <div class="flex space-x-2">
-                                            <a href="{{ route('user.editleave', $leaveRequest->id) }}"
-                                               class="text-blue-600 hover:underline">Edit</a>
-                                            <form action="{{ route('user.deleteleave', $leaveRequest->id) }}" method="POST"
-                                                  onsubmit="return confirm('Are you sure you want to delete this leave request?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:underline">
-                                                    Delete
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @endif
+    <!-- Content Header -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1><i class="fas fa-calendar-alt mr-2"></i> Leave History</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/dashboard">Home</a></li>
+                        <li class="breadcrumb-item active">Leave History</li>
+                    </ol>
+                </div>
             </div>
         </div>
-    </div>
-</x-app-layout>
+    </section>
+
+    <!-- Main Content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Your Leave Requests</h3>
+                </div>
+                <div class="card-body">                    
+                    @if ($leaveRequests->isEmpty())
+                        <p class="text-muted">You have not submitted any leave requests yet.</p>
+                    @else
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Start Date</th>
+                                    <th class="text-center">End Date</th>
+                                    <th class="text-center">Leave Type</th>
+                                    <th class="text-center">Reason</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($leaveRequests as $leaveRequest)
+                                    <tr>
+                                        <td class="text-center">{{ $leaveRequest->start_date }}</td>
+                                        <td class="text-center">{{ \Carbon\Carbon::parse($leaveRequest->start_date)->format('d-m-Y') }}</td>
+                                        <td class="text-center">{{ \Carbon\Carbon::parse($leaveRequest->end_date)->format('d-m-Y') }}</td>
+                                        <td class="text-center">{{ $leaveRequest->reason }}</td>
+                                        <td class="text-center">
+                                            @if ($leaveRequest->status === 'pending')
+                                                <span class="badge badge-warning">Pending</span>
+                                            @elseif ($leaveRequest->status === 'approved')
+                                                <span class="badge badge-success">Approved</span>
+                                            @else
+                                                <span class="badge badge-danger">Rejected</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="{{ route('user.editleave', $leaveRequest->id) }}" 
+                                                class="btn btn-info btn-sm {{ $leaveRequest->status !== 'pending' ? 'disabled' : '' }}"
+                                                {{ $leaveRequest->status !== 'pending' ? 'aria-disabled=true' : '' }}>
+                                                    <i class="fas fa-edit"></i> Edit
+                                            </a>
+
+                                            <!-- <form action="{{ route('user.deleteleave', $leaveRequest->id) }}" method="POST" class="d-inline"
+                                                onsubmit="return confirm('Are you sure you want to delete this leave request?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form> -->
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </section>
+
+</x-user-layout>

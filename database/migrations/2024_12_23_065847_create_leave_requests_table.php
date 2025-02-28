@@ -12,11 +12,11 @@ class CreateLeaveRequestsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id'); // Foreign key
             $table->string('name');
-            $table->enum('leave_type', ['Annual Leave', 'Emergency Leave', 'Medical Leave', 'Maternity']);
+            $table->enum('leave_type', ['annual', 'emergency', 'medical', 'maternity','paternity']);
             $table->date('start_date');
             $table->date('end_date');
             $table->text('reason');
-            $table->enum('status', ['Pending', 'Approved', 'Rejected'])->default('Pending');
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamps();
 
             // Add foreign key constraint

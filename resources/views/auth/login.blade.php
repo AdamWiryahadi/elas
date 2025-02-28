@@ -1,11 +1,14 @@
 <x-guest-layout>
-    <!-- Session Status -->
+    <div id="preloader">
+        <div class="loader"></div>
+    </div>
+
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}">
+    <form id="loginForm" method="POST" action="{{ route('login') }}">
         @csrf
 
-        <!-- Email Address -->
+        <!-- Email -->
         <div>
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
@@ -15,12 +18,7 @@
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
+            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
@@ -39,9 +37,67 @@
                 </a>
             @endif
 
-            <x-primary-button class="ms-3">
+            <x-primary-button id="loginButton" class="ms-3">
                 {{ __('Log in') }}
             </x-primary-button>
         </div>
     </form>
+
+    <!-- Loader CSS -->
+    <style>
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease-out, visibility 0.3s;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e74c3c;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .show-loader {
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+    </style>
+
+    <!-- Loader JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const loginForm = document.getElementById("loginForm");
+            const loginButton = document.getElementById("loginButton");
+            const preloader = document.getElementById("preloader");
+
+            if (loginForm) {
+                loginForm.addEventListener("submit", function () {
+                    preloader.classList.add("show-loader");
+
+                    if (loginButton) {
+                        loginButton.disabled = true;
+                        loginButton.innerText = "Logging in...";
+                    }
+                });
+            }
+        });
+    </script>
 </x-guest-layout>
