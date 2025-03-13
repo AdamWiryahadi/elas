@@ -11,15 +11,19 @@ class AdminMiddleware
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::user()->role == 'admin') {
-            return $next($request);
+        if (!Auth::check()) {
+            return redirect()->route('login'); // Redirect to login if not logged in
         }
-        
-        return redirect()->back();
+
+        if (Auth::user()->role !== 'admin') {
+            abort(403); // Show 403 Forbidden if not an admin
+        }
+
+        return $next($request);
     }
+
 }
+

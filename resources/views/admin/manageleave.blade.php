@@ -1,11 +1,10 @@
 <x-admin-layout>
-
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1><i class="fas fa-calendar-alt"></i> Manage Leave</h1>
+                    <h1><i class="fas fa-ticket-alt"></i> Manage Leave</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -90,14 +89,44 @@
                     {
                         title: '{{ $request->user->name }} - {{ $request->leave_type }}',
                         start: '{{ $request->start_date }}',
-                        end: '{{ date('Y-m-d', strtotime($request->end_date . ' +1 day')) }}', // Add one day
-                        color: '{{ $request->status === 'approved' ? '#28a745' : ($request->status === 'pending' ? '#ffc107' : '#dc3545') }}'
+                        end: '{{ date('Y-m-d', strtotime($request->end_date . ' +1 day')) }}',
+                        color: '{{ $request->status === 'approved' ? '#28a745' : ($request->status === 'pending' ? '#ffc107' : '#dc3545') }}',
+                        description: 'Requested by: {{ $request->user->name }}<br>Leave Type: {{ $request->leave_type }}<br>Status: {{ ucfirst($request->status) }}'
                     },
                     @endforeach
-                ]
+                    @foreach($holidays as $holiday)
+                    {
+                        title: '{{ $holiday->name }}',
+                        start: '{{ $holiday->date }}',
+                        color: '#007bff',
+                        description: 'Public Holiday: {{ $holiday->name }}'
+                    },
+                    @endforeach
+                ],
+                eventDidMount: function(info) {
+                    $(info.el).tooltip({
+                        title: info.event.extendedProps.description,
+                        html: true,
+                        placement: 'top',
+                        trigger: 'hover',
+                        container: 'body'
+                    });
+                }
             });
+
             calendar.render();
         });
     </script>
+
+    <style>
+        .fc-day-sat, .fc-day-sun {
+            background-color: rgba(200, 200, 200, 0.3); /* Light gray */
+        }
+
+        /* Make individual day cells have black borders */
+        .fc-daygrid-day, .fc-scrollgrid {
+            border: 1px solid black !important;
+        }
+    </style>
 
 </x-admin-layout>

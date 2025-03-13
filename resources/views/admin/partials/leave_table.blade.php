@@ -4,10 +4,11 @@
             <th class="text-center">Name</th>
             <th class="text-center">Start Date</th>
             <th class="text-center">End Date</th>
+            <th class="text-center">Days Request</th>
+            <th class="text-center">Days Left</th>
             <th class="text-center">Leave Type</th>
             <th class="text-center">Reason</th>
-            <th class="text-center">Status</th>
-            <th class="text-center">Quota Remaining</th>
+            <th class="text-center">Status</th>            
             @if ($status === 'Pending')
                 <th class="text-center">Actions</th>
             @endif
@@ -19,8 +20,20 @@
                 <td class="text-center">{{ $leaveRequest->user->name }}</td>
                 <td class="text-center">{{ \Carbon\Carbon::parse($leaveRequest->start_date)->format('d-m-Y') }}</td>
                 <td class="text-center">{{ \Carbon\Carbon::parse($leaveRequest->end_date)->format('d-m-Y') }}</td>
+                <td class="text-center">
+                    @if ($leaveRequest->status === 'pending')
+                        {{ $leaveRequest->days_requested ?? '-' }}
+                    @elseif ($leaveRequest->status === 'approved')
+                        {{ $leaveRequest->days_taken ?? '-' }}
+                    @else
+                        {{ $leaveRequest->days_requested ?? '-' }}
+                    @endif
+                </td>
+                <td class="text-center">
+                    {{ $settings->quota_enabled ? $leaveRequest->user->quota : 'Unlimited' }}
+                </td>
                 <td class="text-center">{{ $leaveRequest->leave_type }}</td>
-                <td class="text-center">{{ $leaveRequest->reason }}</td>
+                <td class="text-left">{{ $leaveRequest->reason }}</td>
                 <td class="text-center">
                     @if ($leaveRequest->status === 'pending')
                         <span class="badge bg-warning">Pending</span>
@@ -29,10 +42,7 @@
                     @else
                         <span class="badge bg-danger">Rejected</span>
                     @endif
-                </td>
-                <td class="text-center">
-                    {{ $settings->quota_enabled ? $user->quota : 'Unlimited' }}
-                </td>
+                </td>                
                 @if ($status === 'Pending')
                 <td class="text-center">
                     <div class="d-flex justify-content-center gap-2">

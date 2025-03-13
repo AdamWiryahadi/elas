@@ -59,13 +59,29 @@
                             </a>
                         </div>
                         <div class="card-body">
+                            <!-- Search & Pagination Controls -->
+                            <div class="d-flex justify-content-between mb-3">
+                                <!-- Search Form -->
+                                <form method="GET" action="{{ route('admin.manageuser') }}" class="d-flex">
+                                    <input type="text" name="search" class="form-control me-2" placeholder="Search..." value="{{ request('search') }}">
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                </form>
+
+                                <!-- Pagination Dropdown -->
+                                <form method="GET" action="{{ route('admin.manageuser') }}">
+                                    <select name="per_page" class="form-select" onchange="this.form.submit()">
+                                        <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                                        <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>20</option>
+                                        <option value="30" {{ request('per_page') == 30 ? 'selected' : '' }}>30</option>
+                                    </select>
+                                </form>
+                            </div>
                             @if ($users->isEmpty())
                                 <p class="text-muted">No users found in the database.</p>
                             @else
                                 <table class="table table-bordered table-striped">
                                     <thead class="thead-dark">
                                         <tr>
-                                            <th class="text-center">ID</th>
                                             <th class="text-center">Name</th>
                                             <th class="text-center">Email</th>
                                             <th class="text-center">Role</th>
@@ -77,25 +93,75 @@
                                     <tbody>
                                         @foreach ($users as $user)
                                             <tr>
-                                                <td class="text-center">{{ $user->id }}</td>
-                                                <td class="text-center">{{ $user->name }}</td>
-                                                <td class="text-center">{{ $user->email }}</td>
+                                                <td class="text-left">{{ $user->name }}</td>
+                                                <td class="text-left">{{ $user->email }}</td>
                                                 <td class="text-center">{{ $user->role }}</td>
                                                 <td class="text-center">{{ $user->created_at->format('d-m-Y') }}</td>
                                                 <td class="text-center">
-                                                    {{ $settings->quota_enabled ? $user->quota : 'Unlimited' }}
+                                                    @if ($settings->quota_enabled)
+                                                        <form action="{{ route('admin.updatequota', $user->id) }}" method="POST" 
+                                                            class="d-inline d-flex flex-column align-items-center">
+                                                            @csrf
+                                                            @method('PATCH')
+
+                                                            <!-- Create a 2-column layout under "Quota" column -->
+                                                            <div class="d-flex w-100 justify-content-center align-items-center">
+                                                                <!-- Left Column: Quota Number -->
+                                                                <div class="fw-bold text-center" style="width: 50px;">
+                                                                    {{ $user->quota }}
+                                                                </div>
+
+                                                                <!-- Right Column: Input & Buttons (Inline) -->
+                                                                <div class="d-flex align-items-center gap-1">
+                                                                    <!-- Minus Button (Rounded) -->
+                                                                    <button type="submit" name="action" value="decrease" 
+                                                                            class="btn btn-danger btn-sm rounded-circle d-flex align-items-center justify-content-center"
+                                                                            style="width: 30px; height: 30px;">
+                                                                        <i class="fas fa-minus"></i>
+                                                                    </button>
+
+                                                                    <!-- Compact Input for Quota Adjustment -->
+                                                                    <input type="number" name="amount" class="form-control form-control-sm text-center"
+                                                                        style="width: 50px; padding: 2px;" min="1" placeholder="0" required>
+
+                                                                    <!-- Plus Button (Rounded) -->
+                                                                    <button type="submit" name="action" value="increase" 
+                                                                            class="btn btn-success btn-sm rounded-circle d-flex align-items-center justify-content-center"
+                                                                            style="width: 30px; height: 30px;">
+                                                                        <i class="fas fa-plus"></i>
+                                                                    </button> 
+                                                                </div>
+                                                            </div>
+                                                        </form>
+                                                    @else
+                                                        Unlimited
+                                                    @endif
                                                 </td>
                                                 <td class="text-center">
+                                                    <!-- Reset Password Button with Icon -->
+                                                    <a href="{{ route('admin.resetpassword', $user->id) }}" class="btn btn-warning btn-sm" title="Reset Password">
+                                                        <i class="fas fa-key"></i>
+                                                    </a>
+
+                                                    <!-- Delete Button with Icon -->
                                                     <form action="{{ route('admin.deleteuser', $user->id) }}" method="POST" class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                        <button type="submit" class="btn btn-danger btn-sm" title="Delete User">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </button>
                                                     </form>
                                                 </td>
+
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
+
+                                <!-- Pagination Links -->
+                                <div class="d-flex justify-content-center mt-3">
+                                    {{ $users->appends(['search' => request('search'), 'per_page' => request('per_page')])->links() }}
+                                </div>
                             @endif
                         </div>
                     </div>
