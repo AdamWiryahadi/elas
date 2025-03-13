@@ -30,13 +30,54 @@
                 </h2>
                 <p class="animate__animated animate__fadeInUp animate__delay-4s mt-3">We're glad to have you here. Let's get started!</p>
             </div>
+
+            <div class="row">
+                <!-- Pending -->
+                <div class="col-lg-4 col-6">
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h3>{{ $pendingCount }}</h3>
+                            <p>Pending Leave Requests</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Approved -->
+                <div class="col-lg-4 col-6">
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3>{{ $approvedCount }}</h3>
+                            <p>Approved Leave Requests</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rejected -->
+                <div class="col-lg-4 col-6">
+                    <div class="small-box bg-danger">
+                        <div class="inner">
+                            <h3>{{ $rejectedCount }}</h3>
+                            <p>Rejected Leave Requests</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
                         
             <!-- Quota and Profile Section -->
             <div class="row">
                 <div class="col-md-2">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">Your Remaining Leave Quota</h3>
+                            <h3 class="card-title">Your Remaining Quota</h3>
                         </div>
                         <div class="card-body text-center">
                             <div class="progress-circle" style="position: relative; width: 102px; height: 102px; margin: auto;">
@@ -98,6 +139,7 @@
                 initialView: 'dayGridMonth',
                 height: 'auto',
                 contentHeight: 400,
+                aspectRatio: 1.5,
                 themeSystem: 'bootstrap',
                 headerToolbar: {
                     left: 'prev,next today',
@@ -110,11 +152,30 @@
                         title: '{{ $request->user->name }} - {{ $request->leave_type }}',
                         start: '{{ $request->start_date }}',
                         end: '{{ date('Y-m-d', strtotime($request->end_date . ' +1 day')) }}',
-                        color: '{{ $request->status === 'approved' ? '#28a745' : ($request->status === 'pending' ? '#ffc107' : '#dc3545') }}'
+                        color: '{{ $request->status === 'approved' ? '#28a745' : ($request->status === 'pending' ? '#ffc107' : '#dc3545') }}',
+                        description: 'Requested by: {{ $request->user->name }}<br>Leave Type: {{ $request->leave_type }}<br>Status: {{ ucfirst($request->status) }}'
                     },
                     @endforeach
-                ]
+                    @foreach($holidays as $holiday)
+                    {
+                        title: '{{ $holiday->name }}',
+                        start: '{{ $holiday->date }}',
+                        color: '#007bff',
+                        description: 'Public Holiday: {{ $holiday->name }}'
+                    },
+                    @endforeach
+                ],
+                eventDidMount: function(info) {
+                    $(info.el).tooltip({
+                        title: info.event.extendedProps.description,
+                        html: true,
+                        placement: 'top',
+                        trigger: 'hover',
+                        container: 'body'
+                    });
+                }
             });
+
             calendar.render();
         });
     </script>
@@ -140,4 +201,13 @@
 .percentage {
     font-weight: bold;
 }
+
+.fc-day-sat, .fc-day-sun {
+            background-color: rgba(200, 200, 200, 0.3); /* Light gray */
+        }
+
+        /* Make individual day cells have black borders */
+        .fc-daygrid-day, .fc-scrollgrid {
+            border: 1px solid black !important;
+        }
 </style>

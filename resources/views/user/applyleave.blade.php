@@ -29,8 +29,8 @@
                         <div class="card-body">
                             <!-- Leave Application Form -->
                             <form action="{{ route('user.storeleave') }}" method="POST">
-                                @csrf
-                                <!-- Leave Type -->
+                                @csrf                            
+
                                 <div class="form-group">
                                     <label for="leave_type">Leave Type</label>
                                     <select class="form-control" name="leave_type" id="leave_type" required>
@@ -53,6 +53,12 @@
                                 <div class="form-group">
                                     <label for="end_date">End Date</label>
                                     <input type="date" class="form-control" name="end_date" id="end_date" required>
+                                </div>
+
+                                <!-- Total Days Display -->
+                                <div class="form-group">
+                                    <label>Total Leave Days:</label>
+                                    <p class="text-primary font-weight-bold" id="total_days">0</p>
                                 </div>
 
                                 <!-- Reason -->
@@ -79,3 +85,58 @@
     </div>
     <!-- /.content -->
 </x-user-layout>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const startDateInput = document.getElementById("start_date");
+        const endDateInput = document.getElementById("end_date");
+        const totalDaysElement = document.getElementById("total_days");
+        let publicHolidays = [];
+
+        // Fetch public holidays from the API
+        async function fetchPublicHolidays() {
+            try {
+                let response = await fetch("{{ route('api.holidays') }}"); // Ensure this route is defined
+                let data = await response.json();
+                publicHolidays = data.map(holiday => holiday.date); // Store holiday dates as strings (YYYY-MM-DD)
+            } catch (error) {
+                console.error("Error fetching public holidays:", error);
+                publicHolidays = [];
+            }
+        }
+
+        function isWeekendOrHoliday(date) {
+            let day = date.getDay();
+            let formattedDate = date.toISOString().split("T")[0]; // Convert date to YYYY-MM-DD format
+
+            return day === 0 || day === 6 || publicHolidays.includes(formattedDate);
+        }
+
+        function calculateTotalDays() {
+            let startDate = new Date(startDateInput.value);
+            let endDate = new Date(endDateInput.value);
+            let totalDays = 0;
+
+            if (isNaN(startDate) || isNaN(endDate) || startDate > endDate) {
+                totalDaysElement.textContent = 0; // Reset to 0 if invalid selection
+                return;
+            }
+
+            let currentDate = new Date(startDate);
+            while (currentDate <= endDate) {
+                if (!isWeekendOrHoliday(currentDate)) {
+                    totalDays++;
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            totalDaysElement.textContent = totalDays;
+        }
+
+        // Load holidays first before event listeners
+        fetchPublicHolidays().then(() => {
+            startDateInput.addEventListener("change", calculateTotalDays);
+            endDateInput.addEventListener("change", calculateTotalDays);
+        });
+    });
+</script>

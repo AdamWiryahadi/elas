@@ -1,4 +1,4 @@
-<nav class="main-header navbar navbar-expand navbar-white navbar-light">
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
       <li class="nav-item">
@@ -25,22 +25,37 @@
     </ul>
   </nav>
 
-  <!-- Contact Modal -->
-  <div class="modal fade" id="contactModal" tabindex="-1" role="dialog" aria-labelledby="contactModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="contactModalLabel">Contact Information</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+  <!-- Updated Contact Modal -->
+<div class="modal fade" id="contactModal" tabindex="-1" role="dialog" aria-labelledby="contactModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white text-center">
+        <h5 class="modal-title w-100" id="contactModalLabel">Contact Information</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex align-items-center mb-3">
+          <i class="fas fa-user-circle fa-3x text-primary mr-3"></i>
+          <div>
+            <h6 class="mb-0">MUHAMMAD FARIS IRFAN BIN HANEEFA</h6>
+            <small>Lead Contact Person</small>
+          </div>
         </div>
-        <div class="modal-body">
-          <p>For any questions or concerns, please feel free to contact me.</p>
-          <p><strong>Name:</strong> MUHAMMAD FARIS IRFAN BIN HANEEFA</p>
-          <p><strong>Email:</strong> frshaneefa@enetech.my, frshaneefa@gmail.com</p>
-          <p><strong>Phone:</strong> +601137882324</p>
+        <div class="d-flex align-items-center mb-2">
+          <i class="fas fa-envelope fa-lg text-danger mr-3"></i>
+          <p class="mb-0">frshaneefa@enetech.my</p>
+        </div>
+        <div class="d-flex align-items-center mb-2">
+          <i class="fas fa-envelope fa-lg text-danger mr-3"></i>
+          <p class="mb-0">frshaneefa@gmail.com</p>
+        </div>
+        <div class="d-flex align-items-center mb-2">
+          <i class="fas fa-phone fa-lg text-success mr-3"></i>
+          <p class="mb-0">+601137882324</p>
         </div>
       </div>
     </div>
   </div>
+</div>

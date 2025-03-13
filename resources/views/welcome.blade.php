@@ -4,7 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <title>eLeave</title>
+    <link rel="shortcut icon" href="{{ asset('images/favicon-leavesync.ico') }}">
+    <title>LeaveSync.</title>
+
     <style>
         body {
             display: flex;
@@ -183,12 +185,22 @@
 
         .company-logo {
             position: fixed;
-            top: 20px;  /* Adjust as needed */
-            left: 40px;  /* Adjust as needed */
-            width: 60px;  /* Set width */
-            height: auto;  /* Keep aspect ratio */
-            z-index: 1000;  /* Ensure it stays on top */
+            top: 20px;  
+            left: 40px;  
+            width: 60px;  
+            height: auto;  
+            z-index: 1000;  
         }
+
+        .leavesync-logo {
+            position: fixed;
+            top: 20px;  
+            right: 40px;  
+            width: 120px; /* Adjust width as needed */
+            height: auto;  
+            z-index: 1000;  
+        }
+
 
         /* Fade-in animation for containers */
         .container {
@@ -309,6 +321,7 @@
     </div>
     <!-- Company Logo -->
     <img src="{{ asset('images/enetechlogo.png') }}" alt="Company Logo" class="company-logo">
+    <img src="{{ asset('images/welcome-leavesync.png') }}" alt="LeaveSync Logo" class="leavesync-logo">
 
     <div class="container">
         <div class="image-container">

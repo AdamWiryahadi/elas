@@ -4,8 +4,9 @@
     </div>
 
     <!-- Brand Logo -->
-    <a href="{{ route('admin.dashboard') }}" class="brand-link">
-      <span class="brand-text font-weight-light">E-Leave</span>
+    <a href="{{ route('admin.dashboard') }}" class="brand-link d-flex justify-content-center">
+        <img id="sidebar-logo" src="{{ asset('images/aside-leavesync.png') }}" 
+            alt="LeaveSync Logo" class="custom-brand-logo">
     </a>
 
     <!-- Sidebar -->
@@ -60,6 +61,14 @@
             </a>
           </li>
 
+          <!-- Leave History -->
+          <li class="nav-item">
+            <a href="{{ route('admin.loghistory') }}" class="nav-link {{ request()->routeIs('admin.loghistory') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-calendar-alt"></i>
+              <p>Log History</p>
+            </a>
+          </li>
+
           <!-- Settings -->
           <li class="nav-item">
             <a href="{{ route('admin.settings') }}" class="nav-link {{ request()->routeIs('admin.settings') ? 'active' : '' }}">
@@ -76,6 +85,23 @@
   </aside>
 
   <style>
+    .custom-brand-logo {
+        height: 40px !important; /* Default large logo */
+        width: auto !important;
+        transition: all 0.3s ease-in-out;
+    }
+
+    /* Apply blur effect */
+    .logo-transition {
+        filter: blur(5px);
+        transition: filter 0.2s ease-in-out;
+    }
+
+    /* Sidebar collapsed (Mini logo) */
+    .sidebar-collapse .custom-brand-logo {
+        height: 40px !important; /* Adjust mini logo size */
+    }
+
     .loader-overlay {
         position: fixed;
         top: 0;
@@ -143,6 +169,51 @@
                 });
             });
         });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const logo = document.getElementById("sidebar-logo");
+            const sidebar = document.querySelector(".main-sidebar");
+            const body = document.body;
+
+            function updateLogo(isCollapsed) {
+                logo.classList.add("logo-transition"); // Add blur effect
+
+                setTimeout(() => {
+                    if (isCollapsed) {
+                        logo.src = "{{ asset('images/aside-mini-leavesync.png') }}";
+                        logo.style.height = "40px"; // Mini size
+                    } else {
+                        logo.src = "{{ asset('images/aside-leavesync.png') }}";
+                        logo.style.height = "60px"; // Full size
+                    }
+                }, 200); // Change image after 0.2s
+
+                setTimeout(() => {
+                    logo.classList.remove("logo-transition"); // Remove blur effect
+                }, 400); // Restore sharpness after transition
+            }
+
+            // Detect sidebar toggle (clicking the button)
+            document.addEventListener("click", function (e) {
+                if (e.target.closest("[data-widget='pushmenu']")) {
+                    updateLogo(body.classList.contains("sidebar-collapse"));
+                }
+            });
+
+            // Detect hover over sidebar when collapsed
+            sidebar.addEventListener("mouseenter", function () {
+                if (body.classList.contains("sidebar-collapse")) {
+                    updateLogo(false); // Show full logo on hover
+                }
+            });
+
+            sidebar.addEventListener("mouseleave", function () {
+                if (body.classList.contains("sidebar-collapse")) {
+                    updateLogo(true); // Return to mini logo when not hovering
+                }
+            });
+        });
+
   </script>
 
 

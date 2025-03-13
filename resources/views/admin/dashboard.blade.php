@@ -65,9 +65,10 @@
             <div class="row mb-4">
                 <div class="col-md-12">
                     <div class="card card-primary card-outline">
-                        <div class="card-header">
-                            <h3 class="card-title">Leave Request History</h3>
-                        </div>
+                    <div class="card-header d-flex align-items-center">
+                        <h3 class="card-title mb-0">Leave Request History</h3>
+                        <a href="{{ route('admin.loghistory') }}" class="btn btn-primary ms-auto"><i class="fas fa-plus me-1"></i>View Full History</a>
+                    </div>
                         <div class="card-body">
                             <table class="table table-bordered table-striped">
                                 <thead class="thead-dark">
@@ -87,7 +88,7 @@
                                             <td class="text-center">{{ \Carbon\Carbon::parse($request->start_date)->format('d-m-Y') }}</td>
                                             <td class="text-center">{{ \Carbon\Carbon::parse($request->end_date)->format('d-m-Y') }}</td>
                                             <td class="text-center">{{ $request->leave_type }}</td>
-                                            <td class="text-center">{{ $request->reason }}</td>
+                                            <td class="text-left">{{ $request->reason }}</td>
                                             <td class="text-center">
                                                 @if ($request->status === 'pending')
                                                     <span class="badge bg-warning">Pending</span>
@@ -118,18 +119,18 @@
                                 <thead class="thead-light">
                                     <tr>
                                         <th class="text-center">Name</th>
-                                        
+                                        <th class="text-center">Total Leave Taken</th>
                                         <th class="text-center">Remaining Quota</th>
+                                        <th class="text-center">Quota Limit</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($users as $user)
                                         <tr>
                                             <td class="text-center">{{ $user->name }}</td>
-                                            
-                                            <td class="text-center">
-                                                {{ $settings->quota_enabled ? $user->quota : 'Unlimited' }}
-                                            </td>
+                                            <td class="text-center">{{ $user->leave_taken ?? 0 }}</td> <!-- Summed from leave_requests -->
+                                            <td class="text-center">{{ $user->remaining_quota }}</td> <!-- Taken directly from users.quota -->
+                                            <td class="text-center">{{ $user->quota_limit }}</td> <!-- Taken from settings.quota_limit -->
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -138,7 +139,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </x-admin-layout>
