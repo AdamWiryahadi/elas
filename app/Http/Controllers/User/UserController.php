@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Mail\NewLeaveRequestMail;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\LeaveRequest;
@@ -67,6 +69,29 @@ class UserController extends Controller
         // Pass data to the view
         return view('user.leavehistory', compact('leaveRequests', 'search', 'perPage'));
     }
+
+    // Add this method
+    private function countWorkingDays($start_date, $end_date)
+    {
+        $startDate = \Carbon\Carbon::parse($start_date);
+        $endDate = \Carbon\Carbon::parse($end_date);
+        $publicHolidays = \App\Models\Holiday::pluck('date')->map(fn($date) => \Carbon\Carbon::parse($date)->toDateString())->toArray();
+
+        $workingDays = 0;
+
+        while ($startDate <= $endDate) {
+            $dayOfWeek = $startDate->dayOfWeek;
+            $formattedDate = $startDate->toDateString();
+
+            if ($dayOfWeek !== \Carbon\Carbon::SATURDAY && $dayOfWeek !== \Carbon\Carbon::SUNDAY && !in_array($formattedDate, $publicHolidays)) {
+                $workingDays++;
+            }
+
+            $startDate->addDay();
+        }
+
+        return $workingDays;
+    }
     
     public function storeLeave(Request $request)
     {
@@ -104,19 +129,24 @@ class UserController extends Controller
         }
 
         // Store the leave request but do not deduct quota yet
-        LeaveRequest::create([
+        $leaveRequest = LeaveRequest::create([
             'user_id' => $user->id,
             'leave_type' => $request->leave_type,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
             'reason' => $request->reason,
-            'status' => 'pending',  // Ensure it's stored as 'pending'
-            'days_requested' => $totalLeaveDays, // Store the calculated leave days
+            'status' => 'pending',
+            'days_requested' => $totalLeaveDays,
         ]);
+
+        // Send Email to Admin
+        $adminEmails = ['frshaneefa@enetech.com.my']; // Add Admin Emails Here
+        foreach ($adminEmails as $adminEmail) {
+            Mail::to($adminEmail)->send(new NewLeaveRequestMail($leaveRequest));
+        }
 
         return redirect()->route('user.leavehistory')->with('success', 'Leave request submitted successfully.');
     }
-
 
     public function editLeave($id)
     {
