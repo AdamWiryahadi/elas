@@ -140,7 +140,7 @@ class UserController extends Controller
         ]);
 
         // Send Email to Admin
-        $adminEmails = ['frshaneefa@enetech.com.my']; // Add Admin Emails Here
+        $adminEmails = ['hrms@enetech.com.my']; // Add Admin Emails Here
         foreach ($adminEmails as $adminEmail) {
             Mail::to($adminEmail)->send(new NewLeaveRequestMail($leaveRequest));
         }

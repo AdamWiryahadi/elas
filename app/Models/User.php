@@ -16,6 +16,7 @@ class User extends Authenticatable
         'email',
         'password',
         'quota', // Ensure 'quota' is in the fillable attributes
+        'role',
     ];
 
     protected $hidden = [

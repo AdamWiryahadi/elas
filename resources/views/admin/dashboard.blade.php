@@ -84,7 +84,7 @@
                                 <tbody>
                                     @foreach ($leaveRequests as $request)
                                         <tr>
-                                            <td class="text-center">{{ $request->user->name }}</td>
+                                            <td class="text-left">{{ $request->user->name }}</td>
                                             <td class="text-center">{{ \Carbon\Carbon::parse($request->start_date)->format('d-m-Y') }}</td>
                                             <td class="text-center">{{ \Carbon\Carbon::parse($request->end_date)->format('d-m-Y') }}</td>
                                             <td class="text-center">{{ $request->leave_type }}</td>
@@ -127,7 +127,7 @@
                                 <tbody>
                                     @foreach ($users as $user)
                                         <tr>
-                                            <td class="text-center">{{ $user->name }}</td>
+                                            <td class="text-left">{{ $user->name }}</td>
                                             <td class="text-center">{{ $user->leave_taken ?? 0 }}</td> <!-- Summed from leave_requests -->
                                             <td class="text-center">
                                                 @if ($settings->quota_enabled)
