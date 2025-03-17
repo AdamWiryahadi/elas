@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Mail\LeaveStatusUpdateMail;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use App\Models\LeaveRequest;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
+
 use App\Mail\ResetPasswordMail;
 use App\Models\User;
 use App\Models\Setting;
@@ -208,6 +210,8 @@ class AdminController extends Controller
             'days_left' => $user->quota, // Store the remaining quota at this point
         ]);
 
+        Mail::to($user->email)->send(new LeaveStatusUpdateMail($leaveRequest));
+
         return redirect()->route('admin.manageleave')->with('success', 'Leave request approved successfully.');
     }
 
@@ -229,6 +233,8 @@ class AdminController extends Controller
             }
 
             $leaveRequest->update(['status' => 'rejected']);
+
+            Mail::to($user->email)->send(new LeaveStatusUpdateMail($leaveRequest));
         });
 
         return redirect()->route('admin.manageleave')->with('success', 'Leave request rejected successfully and quota restored.');

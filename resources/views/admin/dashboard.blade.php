@@ -129,8 +129,20 @@
                                         <tr>
                                             <td class="text-center">{{ $user->name }}</td>
                                             <td class="text-center">{{ $user->leave_taken ?? 0 }}</td> <!-- Summed from leave_requests -->
-                                            <td class="text-center">{{ $user->remaining_quota }}</td> <!-- Taken directly from users.quota -->
-                                            <td class="text-center">{{ $user->quota_limit }}</td> <!-- Taken from settings.quota_limit -->
+                                            <td class="text-center">
+                                                @if ($settings->quota_enabled)
+                                                    {{ $user->remaining_quota }}
+                                                @else
+                                                    Unlimited
+                                                @endif
+                                            </td> <!-- Taken directly from users.quota -->
+                                            <td class="text-center">
+                                                @if ($settings->quota_enabled)
+                                                    {{ $user->quota_limit }}
+                                                @else
+                                                    Unlimited
+                                                @endif
+                                            </td> <!-- Taken from settings.quota_limit -->
                                         </tr>
                                     @endforeach
                                 </tbody>
