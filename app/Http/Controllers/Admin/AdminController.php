@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Mail\LeaveStatusUpdateMail;
 use Illuminate\Support\Facades\Mail;
-use App\Http\Controllers\Controller;
-use App\Models\LeaveRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
-
-use App\Mail\ResetPasswordMail;
-use App\Models\User;
-use App\Models\Setting;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
-use Carbon\CarbonPeriod;
-use App\Models\Holiday;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
+use App\Http\Controllers\Controller;
+use App\Models\LeaveRequest;
+use App\Models\User;
+use App\Models\Setting;
+use App\Models\Holiday;
+use App\Mail\ResetPasswordMail;
+use App\Mail\LeaveStatusUpdateMail;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+use Barryvdh\DomPDF\Facade\Pdf; 
 
 class AdminController extends Controller
 {
@@ -240,40 +241,61 @@ class AdminController extends Controller
         return redirect()->route('admin.manageleave')->with('success', 'Leave request rejected successfully and quota restored.');
     }
 
-    public function logHistory(Request $request)
+    public function loghistory(Request $request)
     {
-        // Get the search query
         $search = $request->input('search');
-
-        // Get the selected pagination count, default to 10
         $perPage = $request->input('per_page', 10);
 
-        // Fetch leave requests with filtering
-        $leaveRequests = LeaveRequest::with('user')
-            ->when($search, function ($query) use ($search) {
-                return $query->whereHas('user', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                })
-                ->orWhere('leave_type', 'like', "%{$search}%")
-                ->orWhere('status', 'like', "%{$search}%");
-            })
-            ->latest()
-            ->paginate($perPage);
+        $query = LeaveRequest::with('user'); // Load user relationship for admin view
 
-        // Ensure historical data remains unchanged
+        // Search functionality including user name
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('leave_type', 'like', "%{$search}%")
+                ->orWhere('status', 'like', "%{$search}%")
+                ->orWhere('reason', 'like', "%{$search}%")
+                ->orWhereHas('user', function ($u) use ($search) {
+                    $u->where('name', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        // Optional filters
+        if ($request->filled('start_date')) {
+            $query->whereDate('start_date', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->whereDate('end_date', '<=', $request->end_date);
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $leaveRequests = $query->latest()->paginate($perPage)->withQueryString();
+
+        // Calculate missing days_taken and ensure days_left is set
         foreach ($leaveRequests as $leaveRequest) {
-            // If `days_taken` is not set, calculate it once and store it
             if (!$leaveRequest->days_taken) {
                 $leaveRequest->days_taken = $this->countWorkingDays($leaveRequest->start_date, $leaveRequest->end_date);
-                $leaveRequest->save(); // Store in the database to prevent recalculating in the future
+                $leaveRequest->save();
             }
 
-            // Use the stored `days_left` to maintain historical accuracy
             $leaveRequest->days_left = $leaveRequest->days_left ?? 0;
         }
 
-        // Pass data to the view
         return view('admin.loghistory', compact('leaveRequests', 'search', 'perPage'));
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $leaveRequest = LeaveRequest::findOrFail($id);
+            $leaveRequest->delete();
+
+            return redirect()->route('admin.loghistory')->with('success', 'Leave record deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.loghistory')->with('error', 'Failed to delete the leave record.');
+        }
     }
 
     public function settings(Request $request)
@@ -371,5 +393,78 @@ class AdminController extends Controller
         $user->save();
 
         return redirect()->route('admin.manageuser')->with('success', 'Quota updated successfully.');
+    }
+
+    public function showadmin()
+    {
+        $user = Auth::user();
+
+        // Optional: Check if user is admin
+        if ($user->role !== 'admin') {
+            abort(403); // Forbidden access
+        }
+
+        return view('admin.profile', compact('user'));
+    }
+
+    public function updateadmin(Request $request)
+    {
+        $user = Auth::user();
+
+        // Optional: Check if user is admin
+        if ($user->role !== 'admin') {
+            abort(403);
+        }
+
+        // Validate the input
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
+
+        // Handle password
+        if (!empty($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
+
+        $user->update($validated);
+
+        return redirect()->route('admin.profile')->with('success', 'Profile updated successfully!');
+    }
+
+    public function faq()
+    {
+        return view('admin.faq'); // Create this Blade file accordingly
+    }
+
+    public function about()
+    {
+        return view('admin.about'); // Create this Blade file accordingly
+    }
+
+    public function export(Request $request)
+    {
+        $query = LeaveRequest::with('user'); // Include user data for admin viewing
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('start_date', '>=', $request->start_date);
+        }
+        if ($request->filled('end_date')) {
+            $query->whereDate('end_date', '<=', $request->end_date);
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        $leaveRequests = $query->get();
+
+        $pdf = Pdf::loadView('admin.export_pdf', compact('leaveRequests'));
+        return $pdf->download('log-history.pdf');
     }
 }

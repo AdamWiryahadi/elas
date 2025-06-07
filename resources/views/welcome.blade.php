@@ -3,336 +3,243 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="shortcut icon" href="{{ asset('images/favicon-leavesync.ico') }}">
     <title>LeaveSync.</title>
-
+    <link rel="shortcut icon" href="{{ asset('images/favicon-leavesync.ico') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        /* Reset and Base Styles */
+        * {
+            box-sizing: border-box;
             margin: 0;
-            background-color: #f9fafb;
-            font-family: 'Arial', sans-serif;
-            padding: 20px; /* Ensure padding for small screens */
-            overflow: hidden;
+            padding: 0;
         }
 
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9fafb;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Container */
         .container {
             display: flex;
+            flex-direction: row;
             align-items: center;
             justify-content: center;
-            width: 100%;
-            max-width: 1200px; /* Limit container width on large screens */
+            min-height: 100vh;
+            padding: 20px;
             gap: 20px;
         }
 
-        .image-container, .content-container {
+        /* Image Container */
+        .image-container {
             flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        .image {
+        .image-container img {
             max-width: 100%;
             height: auto;
-            border-radius: 100px;
+            border-radius: 20px;
         }
 
+        /* Content Container */
         .content-container {
+            flex: 1;
+            display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            text-align: left;
-            padding: 10px;
+            justify-content: center;
+            gap: 10px;
         }
 
         .title {
-            font-size: 96px;
+            font-size: 3rem;
             font-weight: bold;
             color: #FF2D20;
         }
 
         .header {
-            font-size: 18px;
-            color: #333;
+            font-size: 1.2rem;
+            line-height: 1.5;
         }
 
         .notes {
-            font-size: 14px;
+            font-size: 0.9rem;
             font-style: italic;
             color: grey;
         }
 
+        /* Buttons */
         .buttons {
             display: flex;
             gap: 10px;
-            margin-top: 20px;
+            flex-wrap: wrap;
         }
 
         .btn {
             padding: 12px 24px;
-            background: linear-gradient(to bottom, #e63946, #d62828); /* Red gradient */
+            background: linear-gradient(to bottom, #e63946, #d62828);
             color: white;
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 1rem;
             font-weight: bold;
             text-decoration: none;
             text-align: center;
             transition: all 0.3s ease;
             box-shadow: 0 4px 8px rgba(230, 57, 70, 0.3);
-            display: inline-block;
         }
 
-        /* Hover Effect */
         .btn:hover {
-            background: linear-gradient(to bottom, #d62828, #b71c1c); /* Darker red */
+            background: linear-gradient(to bottom, #d62828, #b71c1c);
             box-shadow: 0 6px 12px rgba(230, 57, 70, 0.5);
             transform: scale(1.05);
         }
 
-        /* Active Click Effect */
         .btn:active {
-            background: #b71c1c; /* Even darker red */
+            background: #b71c1c;
             box-shadow: 0 2px 6px rgba(230, 57, 70, 0.6);
             transform: scale(0.98);
         }
 
-        /* Optional: Button Text Style */
-        .btn span {
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-
+        /* Footer */
         .footer {
             text-align: center;
             padding: 10px 0;
-            background-color: #f1f1f1;
+            background-color: rgba(255, 255, 255, 0.9);
             color: #555;
-            font-size: 14px;
+            font-size: 0.9rem;
             width: 100%;
             position: fixed;
             bottom: 0;
             left: 0;
-            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        /* Only mobile styles */
-        @media (max-width: 768px) {
-            body {
-                height: auto;
-            }
-
-            .container {
-                flex-direction: column;
-                gap: 20px;
-            }
-
-            .title {
-                font-size: 36px;
-                text-align: center;
-            }
-
-            .header, .notes {
-                text-align: center;
-            }
-
-            .buttons {
-                justify-content: center;
-                width: 100%;
-            }
-
-            .btn {
-                width: 100%; /* Make buttons full width on mobile */
-            }
-        }
-
-        .helpline-btn {
-            position: fixed;
-            bottom: 55px;
-            right: 20px;
-            background-color: #FF2D20; /* Bright red */
-            color: white;
-            padding: 12px 20px;
-            border-radius: 50px; /* Rounded button */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            font-size: 14px;
-            font-weight: bold;
-            text-decoration: none; /* Removes underline */
-            transition: all 0.3s ease;
-            z-index: 1000; /* Stays on top */
-            border: none;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .helpline-btn:hover {
-            background-color: #D8261B; /* Darker red on hover */
-            transform: translateY(-3px); /* Lift effect */
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-        }
-
-        .helpline-btn:active {
-            background-color: #B02018; /* Even darker when clicked */
-            transform: translateY(0); /* Button press effect */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
+        /* Logos */
         .company-logo {
             position: fixed;
-            top: 20px;  
-            left: 40px;  
-            width: 60px;  
-            height: auto;  
-            z-index: 1000;  
+            top: 20px;
+            left: 40px;
+            width: 60px;
+            height: auto;
+            z-index: 1000;
         }
 
         .leavesync-logo {
             position: fixed;
-            top: 20px;  
-            right: 40px;  
-            width: 120px; /* Adjust width as needed */
-            height: auto;  
-            z-index: 1000;  
+            top: 20px;
+            right: 40px;
+            width: 120px;
+            height: auto;
+            z-index: 1000;
         }
 
-
-        /* Fade-in animation for containers */
-        .container {
-            opacity: 0;
-            animation: fadeIn 1s ease-out forwards; /* Fade in with a duration of 1 second */
-        }
-
-        /* Fade-in effect for image and content */
-        .image-container, .content-container {
-            opacity: 0;
-            transform: translateY(30px); /* Start below and move up */
-            animation: fadeInUp 1.2s ease-out forwards;
-            animation-delay: 0.5s; /* Delay to stagger the animations */
-        }
-
-        /* Title fade-in */
-        .title {
-            opacity: 0;
-            animation: fadeIn 1s ease-out forwards;
-            animation-delay: 1s;
-        }
-
-        /* Header fade-in */
-        .header {
-            opacity: 0;
-            animation: fadeIn 1s ease-out forwards;
-            animation-delay: 1.2s;
-        }
-
-        /* Notes fade-in */
-        .notes {
-            opacity: 0;
-            animation: fadeIn 1s ease-out forwards;
-            animation-delay: 1.4s;
-        }
-
-        /* Buttons bounce in */
-        .buttons a {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: bounceIn 0.9s ease forwards;
-            animation-delay: 1.6s;
-        }
-
-        /* Keyframes for animations */
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes bounceIn {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            60% {
-                opacity: 1;
-                transform: translateY(-10px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Full-page preloader */
+        /* Preloader */
         #preloader {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(255, 255, 255, 0.9); /* Light overlay */
-                display: flex;
-                justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e74c3c;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease-out, visibility 0s linear 0.5s;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                padding-top: 100px;
+            }
+
+            .title {
+                font-size: 2rem;
+                text-align: center;
+            }
+
+            .header,
+            .notes {
+                text-align: center;
+                font-size: 1rem;
+            }
+
+            .buttons {
+                flex-direction: column;
                 align-items: center;
-                z-index: 9999;
             }
 
-            /* Spinning Loader */
-            .loader {
-                width: 50px;
-                height: 50px;
-                border: 5px solid #e74c3c; /* Red border */
-                border-top-color: transparent;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
+            .btn {
+                width: 100%;
+                max-width: 300px;
             }
 
-            /* Loader Animation */
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
+            .company-logo {
+                width: 40px;
+                top: 10px;
+                left: 10px;
             }
 
-            /* Hide preloader when page loads */
-            .hidden {
-                opacity: 0;
-                visibility: hidden;
-                transition: opacity 0.5s ease-out, visibility 0s linear 0.5s;
+            .leavesync-logo {
+                width: 80px;
+                top: 10px;
+                right: 10px;
             }
+        }
     </style>
 </head>
-<a href="tel:+601137882324" class="helpline-btn">
-  <i class="fa fa-headset"></i>. Any Problems ?
-</a>
-<body class="font-sans antialiased dark:bg-black dark:text-white/50">
+<body>
+    <!-- Preloader -->
     <div id="preloader">
         <div class="loader"></div>
     </div>
-    <!-- Company Logo -->
+
+    <!-- Logos -->
     <img src="{{ asset('images/enetechlogo.png') }}" alt="Company Logo" class="company-logo">
     <img src="{{ asset('images/welcome-leavesync.png') }}" alt="LeaveSync Logo" class="leavesync-logo">
 
+    <!-- Main Content -->
     <div class="container">
         <div class="image-container">
-            <img src="{{ asset('images/welcomePage.png') }}" alt="Welcome Image" class="image">
+            <img src="{{ asset('images/welcomePage.png') }}" alt="Welcome Image">
         </div>
-
         <div class="content-container">
-        <div class="title">Need a Break?</div>
-        <div class="header">Don't play around! Transfer RM50 first, then you can take a break.<br>If not, the boss will send work home! 😜</div><br>
-        <div class="notes"><b>***Notes:</b> Just kidding, please make sure no work is left behind, <br> Thank you & Enjoy your break.</div>
-
+            <div class="title">Need a Break?</div>
+            <div class="header">
+                Don't play around! Transfer RM50 first, then you can take a break.<br>
+                If not, the boss will send work home! 😜
+            </div>
+            <div class="notes">
+                <strong>***Notes:</strong> Just kidding, please make sure no work is left behind.<br>
+                Thank you & Enjoy your break.
+            </div>
             <div class="buttons">
                 @if (Route::has('login'))
                     @auth
@@ -348,14 +255,17 @@
         </div>
     </div>
 
+    <!-- Footer -->
     <footer class="footer">
-        © 2025 ENETECH Sdn Bhd. All rights reserved.
+        ©2025 ENETECH SDN. BHD. Version 1.0
     </footer>
+
+    <!-- Scripts -->
+    <script>
+        window.addEventListener('load', function() {
+            const preloader = document.getElementById('preloader');
+            preloader.classList.add('hidden');
+        });
+    </script>
 </body>
 </html>
-
-<script>
-    window.onload = function() {
-        document.getElementById("preloader").classList.add("hidden");
-    };
-</script>

@@ -4,12 +4,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1><i class="fas fa-ticket-alt"></i> Manage Leave</h1>
+                    <h1><i class="fas fa-calendar-plus"></i> Leave Management</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active">Manage Leave</li>
+                        <li class="breadcrumb-item active">Leave Management</li>
                     </ol>
                 </div>
             </div>
@@ -90,7 +90,7 @@
                         title: '{{ $request->user->name }} - {{ $request->leave_type }}',
                         start: '{{ $request->start_date }}',
                         end: '{{ date('Y-m-d', strtotime($request->end_date . ' +1 day')) }}',
-                        color: '{{ $request->status === 'approved' ? '#28a745' : ($request->status === 'pending' ? '#ffc107' : '#dc3545') }}',
+                        className: '{{ $request->status }}',
                         description: 'Requested by: {{ $request->user->name }}<br>Leave Type: {{ $request->leave_type }}<br>Status: {{ ucfirst($request->status) }}'
                     },
                     @endforeach
@@ -98,7 +98,7 @@
                     {
                         title: '{{ $holiday->name }}',
                         start: '{{ $holiday->date }}',
-                        color: '#007bff',
+                        className: 'holiday',
                         description: 'Public Holiday: {{ $holiday->name }}'
                     },
                     @endforeach
@@ -119,13 +119,71 @@
     </script>
 
     <style>
-        .fc-day-sat, .fc-day-sun {
-            background-color: rgba(200, 200, 200, 0.3); /* Light gray */
+        /* Base calendar background */
+        .fc {
+            background-color: #ffffff;
+            border-radius: 6px;
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
-        /* Make individual day cells have black borders */
+        /* Header customization */
+        .fc-toolbar-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #343a40;
+        }
+
+        .fc-button {
+            background-color: #0d6efd !important;
+            border: none !important;
+            color: white !important;
+            border-radius: 4px !important;
+            padding: 0.5rem 1rem !important;
+        }
+
+        .fc-button:hover {
+            background-color: #0b5ed7 !important;
+        }
+
+        .fc-button-primary:not(:disabled):hover {
+            background-color: #0b5ed7;
+        }
+
+        /* Weekend styling */
+        .fc-day-sat, .fc-day-sun {
+            background-color: #f8f9fa !important;
+        }
+
+        /* Day cell borders */
         .fc-daygrid-day, .fc-scrollgrid {
-            border: 1px solid black !important;
+            border: 1px solid #dee2e6 !important;
+        }
+
+        /* Events appearance */
+        .fc-event {
+            border: none !important;
+            color: #fff !important;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        /* Leave status specific colors */
+        .fc-event.approved {
+            background-color: #28a745 !important;
+        }
+        .fc-event.pending {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+        }
+        .fc-event.rejected {
+            background-color: #dc3545 !important;
+        }
+
+        /* Holiday style */
+        .fc-event.holiday {
+            background-color: #007bff !important;
         }
     </style>
 

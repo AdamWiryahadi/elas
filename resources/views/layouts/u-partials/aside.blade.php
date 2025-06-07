@@ -4,7 +4,7 @@
     </div>
 
     <!-- Brand Logo -->
-    <a href="{{ route('admin.dashboard') }}" class="brand-link d-flex justify-content-center">
+    <a href="{{ route('user.dashboard') }}" class="brand-link d-flex justify-content-center">
         <img id="sidebar-logo" src="{{ asset('images/aside-leavesync.png') }}" 
             alt="LeaveSync Logo" class="custom-brand-logo">
     </a>
@@ -17,19 +17,7 @@
           <img src="{{ asset('images/user.png') }}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">Welcome {{ Auth::user()->name }}</a>
-        </div>
-      </div>
-
-      <!-- SidebarSearch Form -->
-      <div class="form-inline">
-        <div class="input-group" data-widget="sidebar-search">
-          <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
-          <div class="input-group-append">
-            <button class="btn btn-sidebar">
-              <i class="fas fa-search fa-fw"></i>
-            </button>
-          </div>
+          <div class="d-block" style="color: white;">{{ Auth::user()->name }}</div>
         </div>
       </div>
 
@@ -47,19 +35,55 @@
           <!-- Apply Leave -->
           <li class="nav-item">
             <a href="{{ route('user.applyleave') }}" class="nav-link {{ request()->routeIs('user.applyleave') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-ticket-alt"></i>
+              <i class="nav-icon fas fa-calendar-plus"></i>
               <p>Apply Leave</p>
             </a>
           </li>
 
-          <!-- Leaves Record -->
+          <!-- Leaves History -->
           <li class="nav-item">
             <a href="{{ route('user.leavehistory') }}" class="nav-link {{ request()->routeIs('user.leavehistory') ? 'active' : '' }}">
               <i class="nav-icon fas fa-calendar-alt"></i>
-              <p>Leaves Record</p>
+              <p>Leaves History</p>
             </a>
           </li>
-          <!-- /.sidebar-menu -->
+
+          <!-- Profile Settings -->
+          <li class="nav-item">
+            <a href="{{ route('user.profile') }}" class="nav-link {{ request()->routeIs('user.profile') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-user"></i>
+              <p>Profile Settings</p>
+            </a>
+          </li>
+
+          <!-- FAQ (Bottom) -->
+          <li class="nav-item mt-auto">
+            <a href="{{ route('user.faq') }}" class="nav-link {{ request()->routeIs('user.faq') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-comments"></i>
+              <p>FAQ</p>
+            </a>
+          </li>
+
+          <!-- About -->
+          <li class="nav-item">
+            <a href="{{ route('user.about') }}" class="nav-link {{ request()->routeIs('user.about') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-info-circle"></i>
+              <p>About</p>
+            </a>
+          </li>
+
+          <!-- Logout -->
+          <li class="nav-item">
+            <a href="{{ route('logout') }}" 
+              class="nav-link"
+              onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+              <i class="nav-icon fas fa-sign-out-alt"></i>
+              <p>Logout</p>
+            </a>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+              @csrf
+            </form>
+          </li>
         </ul>
       </nav>
     </div>
@@ -110,32 +134,20 @@
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+
+    .sidebar .nav-sidebar {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .sidebar .nav-sidebar > li.nav-item.mt-auto {
+      margin-top: auto;
+    }
+
   </style>
 
   <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const searchInput = document.getElementById('sidebar-search');
-            const menuItems = document.querySelectorAll('.nav-sidebar .nav-item');
-
-            searchInput.addEventListener('input', function() {
-                const query = searchInput.value.toLowerCase();
-
-                menuItems.forEach(function(item) {
-                    const linkText = item.textContent.toLowerCase();
-                    
-                    if (linkText.includes(query)) {
-                        item.style.display = ''; // Show matched items
-                        let parentMenu = item.closest('.nav-treeview'); // If it's inside a submenu, show it
-                        if (parentMenu) {
-                            parentMenu.classList.add('show');
-                        }
-                    } else {
-                        item.style.display = 'none'; // Hide non-matching items
-                    }
-                });
-            });
-        });
-
         document.addEventListener('DOMContentLoaded', function() {
             const menuLinks = document.querySelectorAll('.nav-sidebar .nav-link');
 
