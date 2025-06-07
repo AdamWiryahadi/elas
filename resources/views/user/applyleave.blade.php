@@ -28,7 +28,7 @@
                         </div>
                         <div class="card-body">
                             <!-- Leave Application Form -->
-                            <form action="{{ route('user.storeleave') }}" method="POST">
+                            <form action="{{ route('user.storeleave') }}" method="POST" id="leave-form">
                                 @csrf                            
 
                                 <div class="form-group">
@@ -46,19 +46,33 @@
                                 <!-- Start Date -->
                                 <div class="form-group">
                                     <label for="start_date">Start Date</label>
-                                    <input type="date" class="form-control" name="start_date" id="start_date" required>
+                                    <input 
+                                        type="date" 
+                                        class="form-control" 
+                                        name="start_date" 
+                                        id="start_date" 
+                                        required 
+                                        min="{{ date('Y-m-d') }}" 
+                                    >
                                 </div>
 
                                 <!-- End Date -->
                                 <div class="form-group">
                                     <label for="end_date">End Date</label>
-                                    <input type="date" class="form-control" name="end_date" id="end_date" required>
+                                    <input 
+                                        type="date" 
+                                        class="form-control" 
+                                        name="end_date" 
+                                        id="end_date" 
+                                        required 
+                                        min="{{ date('Y-m-d') }}" 
+                                    >
                                 </div>
 
                                 <!-- Total Days Display -->
                                 <div class="form-group">
-                                    <label>Total Leave Days:</label>
-                                    <p class="text-primary font-weight-bold" id="total_days">0</p>
+                                    <label for="total_days">Total Leave Days:</label>
+                                    <p id="total_days" aria-live="polite" class="text-primary font-weight-bold">0</p>
                                 </div>
 
                                 <!-- Reason -->
@@ -67,9 +81,10 @@
                                     <textarea class="form-control" name="reason" id="reason" rows="4" required></textarea>
                                 </div>
 
-                                <!-- Submit Button -->
+                                <!-- Reset and Submit Buttons -->
                                 <div class="form-group text-right">
-                                    <button type="submit" class="btn btn-primary">
+                                    <button type="reset" id="reset-btn" class="btn btn-secondary mr-2">Reset</button>
+                                    <button type="submit" id="submit-btn" class="btn btn-primary" disabled>
                                         <i class="fas fa-paper-plane"></i> Submit Leave Request
                                     </button>
                                 </div>
@@ -87,56 +102,70 @@
 </x-user-layout>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const startDateInput = document.getElementById("start_date");
-        const endDateInput = document.getElementById("end_date");
-        const totalDaysElement = document.getElementById("total_days");
-        let publicHolidays = [];
+document.addEventListener("DOMContentLoaded", function () {
+    const startDateInput = document.getElementById("start_date");
+    const endDateInput = document.getElementById("end_date");
+    const totalDaysElement = document.getElementById("total_days");
+    const submitBtn = document.getElementById("submit-btn");
+    let publicHolidays = [];
 
-        // Fetch public holidays from the API
-        async function fetchPublicHolidays() {
-            try {
-                let response = await fetch("{{ route('api.holidays') }}"); // Ensure this route is defined
-                let data = await response.json();
-                publicHolidays = data.map(holiday => holiday.date); // Store holiday dates as strings (YYYY-MM-DD)
-            } catch (error) {
-                console.error("Error fetching public holidays:", error);
-                publicHolidays = [];
-            }
+    async function fetchPublicHolidays() {
+        try {
+            let response = await fetch("{{ route('api.holidays') }}");
+            let data = await response.json();
+            publicHolidays = data.map(holiday => holiday.date);
+        } catch (error) {
+            console.error("Error fetching public holidays:", error);
+            publicHolidays = [];
+        }
+    }
+
+    function isWeekendOrHoliday(date) {
+        const day = date.getDay();
+        const formattedDate = date.toISOString().split("T")[0];
+        return day === 0 || day === 6 || publicHolidays.includes(formattedDate);
+    }
+
+    function calculateTotalDays() {
+        let startDate = new Date(startDateInput.value);
+        let endDate = new Date(endDateInput.value);
+        let totalDays = 0;
+
+        // Validate dates
+        if (isNaN(startDate) || isNaN(endDate) || startDate > endDate) {
+            totalDaysElement.textContent = 0;
+            submitBtn.disabled = true;
+            return;
         }
 
-        function isWeekendOrHoliday(date) {
-            let day = date.getDay();
-            let formattedDate = date.toISOString().split("T")[0]; // Convert date to YYYY-MM-DD format
+        // Set min attribute for end date dynamically
+        endDateInput.min = startDateInput.value;
 
-            return day === 0 || day === 6 || publicHolidays.includes(formattedDate);
+        // Count working days excluding weekends and holidays
+        let currentDate = new Date(startDate);
+        while (currentDate <= endDate) {
+            if (!isWeekendOrHoliday(currentDate)) {
+                totalDays++;
+            }
+            currentDate.setDate(currentDate.getDate() + 1);
         }
 
-        function calculateTotalDays() {
-            let startDate = new Date(startDateInput.value);
-            let endDate = new Date(endDateInput.value);
-            let totalDays = 0;
+        totalDaysElement.textContent = totalDays;
+        submitBtn.disabled = totalDays === 0;
+    }
 
-            if (isNaN(startDate) || isNaN(endDate) || startDate > endDate) {
-                totalDaysElement.textContent = 0; // Reset to 0 if invalid selection
-                return;
+    fetchPublicHolidays().then(() => {
+        startDateInput.addEventListener("change", () => {
+            if (endDateInput.value < startDateInput.value) {
+                endDateInput.value = startDateInput.value;
             }
-
-            let currentDate = new Date(startDate);
-            while (currentDate <= endDate) {
-                if (!isWeekendOrHoliday(currentDate)) {
-                    totalDays++;
-                }
-                currentDate.setDate(currentDate.getDate() + 1);
-            }
-
-            totalDaysElement.textContent = totalDays;
-        }
-
-        // Load holidays first before event listeners
-        fetchPublicHolidays().then(() => {
-            startDateInput.addEventListener("change", calculateTotalDays);
-            endDateInput.addEventListener("change", calculateTotalDays);
+            calculateTotalDays();
         });
+
+        endDateInput.addEventListener("change", calculateTotalDays);
+
+        // Initial check
+        calculateTotalDays();
     });
+});
 </script>

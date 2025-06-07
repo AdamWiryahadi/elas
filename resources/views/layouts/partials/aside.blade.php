@@ -17,22 +17,9 @@
           <img src="{{ asset('images/user.png') }}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">Welcome {{ Auth::user()->name }}</a>
+          <div class="d-block" style="color: white;">{{ Auth::user()->name }}</div>
         </div>
       </div>
-
-      <!-- SidebarSearch Form -->
-      <div class="form-inline">
-        <div class="input-group" data-widget="sidebar-search">
-            <input id="sidebar-search" class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
-            <div class="input-group-append">
-                <button class="btn btn-sidebar">
-                    <i class="fas fa-search fa-fw"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
 
       <!-- Sidebar Menu -->
       <nav class="mt-2">
@@ -49,15 +36,15 @@
           <li class="nav-item">
             <a href="{{ route('admin.manageuser') }}" class="nav-link {{ request()->routeIs('admin.manageuser') ? 'active' : '' }}">
               <i class="nav-icon fas fa-users"></i>
-              <p>All Users</p>
+              <p>User Management</p>
             </a>
           </li>
 
           <!-- All Leaves -->
           <li class="nav-item">
             <a href="{{ route('admin.manageleave') }}" class="nav-link {{ request()->routeIs('admin.manageleave') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-ticket-alt"></i>
-              <p>All Leaves</p>
+              <i class="nav-icon fas fa-calendar-plus"></i>
+              <p>Leave Management</p>
             </a>
           </li>
 
@@ -73,9 +60,47 @@
           <li class="nav-item">
             <a href="{{ route('admin.settings') }}" class="nav-link {{ request()->routeIs('admin.settings') ? 'active' : '' }}">
               <i class="nav-icon fas fa-sliders-h"></i>
-              <p>Settings</p>
+              <p>Leave Settings</p>
             </a>
           </li>
+
+          <!-- Profile Settings -->
+          <li class="nav-item">
+            <a href="{{ route('admin.profile') }}" class="nav-link {{ request()->routeIs('admin.profile') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-user"></i>
+              <p>Profile Settings</p>
+            </a>
+          </li>
+
+          <!-- FAQ (Bottom) -->
+          <li class="nav-item mt-auto">
+            <a href="{{ route('admin.faq') }}" class="nav-link {{ request()->routeIs('admin.faq') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-comments"></i>
+              <p>FAQ</p>
+            </a>
+          </li>
+
+          <!-- About -->
+          <li class="nav-item">
+            <a href="{{ route('admin.about') }}" class="nav-link {{ request()->routeIs('admin.about') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-info-circle"></i>
+              <p>About</p>
+            </a>
+          </li>
+
+          <!-- Logout -->
+          <li class="nav-item">
+            <a href="{{ route('logout') }}" 
+              class="nav-link"
+              onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+              <i class="nav-icon fas fa-sign-out-alt"></i>
+              <p>Logout</p>
+            </a>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+              @csrf
+            </form>
+          </li>
+
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

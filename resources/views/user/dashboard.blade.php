@@ -73,47 +73,54 @@
             </div>
                         
             <!-- Quota and Profile Section -->
-            <div class="row">
-                <div class="col-md-2">
-                    <div class="card">
+            <div class="row d-flex align-items-stretch">
+                <!-- Quota Section -->
+                <div class="col-md-4 col-12 mb-3 d-flex">
+                    <div class="card flex-fill text-center">
                         <div class="card-header">
-                            <h3 class="card-title">Your Remaining Quota</h3>
+                            <h3 class="card-title mb-0">Your Remaining Quota</h3>
                         </div>
-                        <div class="card-body text-center">
-                            <div class="progress-circle" style="position: relative; width: 102px; height: 102px; margin: auto;">
-                                <svg viewBox="0 0 36 36" class="circular-chart">
+                        <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                            <div class="progress-circle mb-3" style="position: relative; width: 120px; height: 120px;">
+                                <svg viewBox="0 0 36 36" class="circular-chart" role="img" aria-label="Leave quota progress">
                                     <path class="circle-bg"
                                         d="M18 2.0845
-                                            a 15.9155 15.9155 0 0 1 0 31.831
-                                            a 15.9155 15.9155 0 0 1 0 -31.831"
-                                        fill="none" stroke="#eee" stroke-width="3"/>
+                                        a 15.9155 15.9155 0 0 1 0 31.831
+                                        a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none" stroke="#eee" stroke-width="3" />
                                     <path class="circle"
                                         stroke-dasharray="{{ $settings->quota_enabled && $settings->quota_limit ? (($quota / $settings->quota_limit) * 100) . ', 100' : '100, 100' }}"
                                         d="M18 2.0845
-                                            a 15.9155 15.9155 0 0 1 0 31.831
-                                            a 15.9155 15.9155 0 0 1 0 -31.831"
-                                        fill="none" stroke="{{ $settings->quota_enabled ? '#4caf50' : '#2196f3' }}" stroke-width="3" stroke-linecap="round"/>
-                                    <text x="18" y="20.35" class="percentage" text-anchor="middle" dy=".3em" font-size="6" fill="#000">
+                                        a 15.9155 15.9155 0 0 1 0 31.831
+                                        a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none" 
+                                        stroke="{{ $settings->quota_enabled ? '#4caf50' : '#2196f3' }}" 
+                                        stroke-width="3" stroke-linecap="round" />
+                                    <text x="18" y="20.35" class="percentage" text-anchor="middle" dy=".3em" font-size="8" fill="#000">
                                         {{ $settings->quota_enabled ? "$quota days" : "∞" }}
                                     </text>
                                 </svg>
                             </div>
-                            <p class="mt-2">{{ $settings->quota_enabled ? "$quota days remaining" : "Unlimited leave available" }}</p>
+                            <p class="mb-0">{{ $settings->quota_enabled ? "$quota days remaining" : "Unlimited leave available" }}</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-10">
-                    <div class="card">
+                <!-- Profile Section -->
+                <div class="col-md-8 col-12 mb-3 d-flex">
+                    <div class="card flex-fill">
                         <div class="card-header">
                             <h3 class="card-title">Your Profile</h3>
                         </div>
-                        <div class="card-body d-flex align-items-center">
-                        <img src="{{ auth()->user()->profile_photo_url ?? asset('images/default-avatar.jpg') }}" class="img-circle elevation-2 mr-3" alt="User Image" style="width:150px; height:150px;">
-                            <div class="ml-3">
+                        <div class="card-body d-flex flex-column align-items-center text-center gap-3">
+                            <img src="{{ auth()->user()->profile_photo_url ?? asset('images/default-avatar.jpg') }}"
+                                alt="User Image"
+                                class="rounded-circle elevation-2"
+                                style="width:120px; height:120px; object-fit: cover;">
+                            <div>
                                 <h5>{{ auth()->user()->name }}</h5>
                                 <p class="text-muted mb-1">{{ auth()->user()->email }}</p>
-                                <p class="text-muted">Member since: {{ auth()->user()->created_at->format('d F Y') }}</p>
+                                <p class="text-muted mb-0">Member since: {{ auth()->user()->created_at->format('d F Y') }}</p>
                             </div>
                         </div>
                     </div>
@@ -152,7 +159,7 @@
                         title: '{{ $request->user->name }} - {{ $request->leave_type }}',
                         start: '{{ $request->start_date }}',
                         end: '{{ date('Y-m-d', strtotime($request->end_date . ' +1 day')) }}',
-                        color: '{{ $request->status === 'approved' ? '#28a745' : ($request->status === 'pending' ? '#ffc107' : '#dc3545') }}',
+                        className: '{{ $request->status }}',
                         description: 'Requested by: {{ $request->user->name }}<br>Leave Type: {{ $request->leave_type }}<br>Status: {{ ucfirst($request->status) }}'
                     },
                     @endforeach
@@ -160,7 +167,7 @@
                     {
                         title: '{{ $holiday->name }}',
                         start: '{{ $holiday->date }}',
-                        color: '#007bff',
+                        className: 'holiday',
                         description: 'Public Holiday: {{ $holiday->name }}'
                     },
                     @endforeach
@@ -182,32 +189,110 @@
 </x-user-layout>
 
 <style>
-.circular-chart {
-    width: 100%;
-    height: 100%;
-}
-.circle-bg {
-    stroke: #eee;
-    stroke-width: 3;
-}
-.circle {
-    stroke: #4caf50;
-    stroke-width: 3;
-    stroke-linecap: round;
-    transform: rotate(-90deg);
-    transform-origin: 50% 50%;
-    transition: stroke-dasharray 0.5s ease;
-}
-.percentage {
-    font-weight: bold;
-}
+    .circular-chart {
+        max-width: 120px;
+        max-height: 120px;
+        display: block;
+        margin: 0 auto;
+    }
 
-.fc-day-sat, .fc-day-sun {
-            background-color: rgba(200, 200, 200, 0.3); /* Light gray */
-        }
+    .circle-bg {
+        fill: none;
+        stroke: #eee;
+        stroke-width: 3;
+    }
 
-        /* Make individual day cells have black borders */
-        .fc-daygrid-day, .fc-scrollgrid {
-            border: 1px solid black !important;
+    .circle {
+        fill: none;
+        stroke-width: 3;
+        stroke-linecap: round;
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+        stroke-dashoffset: 100;
+        animation: progress-animation 1.5s ease forwards;
+    }
+
+    .percentage {
+        font-family: 'Arial', sans-serif;
+        font-size: 0.7rem;
+        fill: #333;
+        dominant-baseline: middle;
+        text-anchor: middle;
+    }
+
+    @keyframes progress-animation {
+        from {
+            stroke-dashoffset: 100;
         }
+        to {
+            stroke-dashoffset: 0;
+    }
+    }
+
+    /* Base calendar background */
+    .fc {
+        background-color: #ffffff;
+        border-radius: 6px;
+        padding: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Header customization */
+    .fc-toolbar-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #343a40;
+    }
+
+    .fc-button {
+        background-color: #0d6efd !important;
+        border: none !important;
+        color: white !important;
+        border-radius: 4px !important;
+        padding: 0.5rem 1rem !important;
+    }
+
+    .fc-button:hover {
+        background-color: #0b5ed7 !important;
+    }
+
+    .fc-button-primary:not(:disabled):hover {
+        background-color: #0b5ed7;
+    }
+
+    /* Weekend styling */
+    .fc-day-sat, .fc-day-sun {
+        background-color: #f8f9fa !important;
+    }
+
+    /* Day cell borders */
+    .fc-daygrid-day, .fc-scrollgrid {
+        border: 1px solid #dee2e6 !important;
+    }
+
+    /* Events appearance */
+    .fc-event {
+        border: none !important;
+        color: #fff !important;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+    }
+
+    /* Leave status specific colors */
+    .fc-event.approved {
+        background-color: #28a745 !important;
+    }
+    .fc-event.pending {
+        background-color: #ffc107 !important;
+        color: #212529 !important;
+    }
+    .fc-event.rejected {
+        background-color: #dc3545 !important;
+    }
+
+    /* Holiday style */
+    .fc-event.holiday {
+        background-color: #007bff !important;
+    }
 </style>

@@ -70,38 +70,40 @@
                         <a href="{{ route('admin.loghistory') }}" class="btn btn-primary ms-auto"><i class="fas fa-plus me-1"></i>View Full History</a>
                     </div>
                         <div class="card-body">
-                            <table class="table table-bordered table-striped">
-                                <thead class="thead-dark">
-                                    <tr>
-                                        <th class="text-center">User</th>
-                                        <th class="text-center">Start Date</th>
-                                        <th class="text-center">End Date</th>
-                                        <th class="text-center">Type</th>
-                                        <th class="text-center">Reason</th>
-                                        <th class="text-center">Status</th>                                        
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($leaveRequests as $request)
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead class="thead-dark">
                                         <tr>
-                                            <td class="text-left">{{ $request->user->name }}</td>
-                                            <td class="text-center">{{ \Carbon\Carbon::parse($request->start_date)->format('d-m-Y') }}</td>
-                                            <td class="text-center">{{ \Carbon\Carbon::parse($request->end_date)->format('d-m-Y') }}</td>
-                                            <td class="text-center">{{ $request->leave_type }}</td>
-                                            <td class="text-left">{{ $request->reason }}</td>
-                                            <td class="text-center">
-                                                @if ($request->status === 'pending')
-                                                    <span class="badge bg-warning">Pending</span>
-                                                @elseif ($request->status === 'approved')
-                                                    <span class="badge bg-success">Approved</span>
-                                                @else
-                                                    <span class="badge bg-danger">Rejected</span>
-                                                @endif
-                                            </td>
+                                            <th class="text-center">User</th>
+                                            <th class="text-center">Start Date</th>
+                                            <th class="text-center">End Date</th>
+                                            <th class="text-center">Type</th>
+                                            <th class="text-center">Reason</th>
+                                            <th class="text-center">Status</th>                                        
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($leaveRequests as $request)
+                                            <tr>
+                                                <td class="text-left">{{ $request->user->name }}</td>
+                                                <td class="text-center">{{ \Carbon\Carbon::parse($request->start_date)->format('d-m-Y') }}</td>
+                                                <td class="text-center">{{ \Carbon\Carbon::parse($request->end_date)->format('d-m-Y') }}</td>
+                                                <td class="text-center">{{ $request->leave_type }}</td>
+                                                <td class="text-left">{{ $request->reason }}</td>
+                                                <td class="text-center">
+                                                    @if ($request->status === 'pending')
+                                                        <span class="badge bg-warning">Pending</span>
+                                                    @elseif ($request->status === 'approved')
+                                                        <span class="badge bg-success">Approved</span>
+                                                    @else
+                                                        <span class="badge bg-danger">Rejected</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

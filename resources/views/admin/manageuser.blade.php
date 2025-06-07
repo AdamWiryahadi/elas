@@ -79,84 +79,85 @@
                             @if ($users->isEmpty())
                                 <p class="text-muted">No users found in the database.</p>
                             @else
-                                <table class="table table-bordered table-striped">
-                                    <thead class="thead-dark">
-                                        <tr>
-                                            <th class="text-center">Name</th>
-                                            <th class="text-center">Email</th>
-                                            <th class="text-center">Role</th>
-                                            <th class="text-center">Created At</th>
-                                            <th class="text-center">Quota</th>
-                                            <th class="text-center">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($users as $user)
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <thead class="thead-dark">
                                             <tr>
-                                                <td class="text-left">{{ $user->name }}</td>
-                                                <td class="text-left">{{ $user->email }}</td>
-                                                <td class="text-center">{{ $user->role }}</td>
-                                                <td class="text-center">{{ $user->created_at->format('d-m-Y') }}</td>
-                                                <td class="text-center">
-                                                    @if ($settings->quota_enabled)
-                                                        <form action="{{ route('admin.updatequota', $user->id) }}" method="POST" 
-                                                            class="d-inline d-flex flex-column align-items-center">
-                                                            @csrf
-                                                            @method('PATCH')
-
-                                                            <!-- Create a 2-column layout under "Quota" column -->
-                                                            <div class="d-flex w-100 justify-content-center align-items-center">
-                                                                <!-- Left Column: Quota Number -->
-                                                                <div class="fw-bold text-center" style="width: 50px;">
-                                                                    {{ $user->quota }}
-                                                                </div>
-
-                                                                <!-- Right Column: Input & Buttons (Inline) -->
-                                                                <div class="d-flex align-items-center gap-1">
-                                                                    <!-- Minus Button (Rounded) -->
-                                                                    <button type="submit" name="action" value="decrease" 
-                                                                            class="btn btn-danger btn-sm rounded-circle d-flex align-items-center justify-content-center"
-                                                                            style="width: 30px; height: 30px;">
-                                                                        <i class="fas fa-minus"></i>
-                                                                    </button>
-
-                                                                    <!-- Compact Input for Quota Adjustment -->
-                                                                    <input type="number" name="amount" class="form-control form-control-sm text-center"
-                                                                        style="width: 50px; padding: 2px;" min="1" placeholder="0" required>
-
-                                                                    <!-- Plus Button (Rounded) -->
-                                                                    <button type="submit" name="action" value="increase" 
-                                                                            class="btn btn-success btn-sm rounded-circle d-flex align-items-center justify-content-center"
-                                                                            style="width: 30px; height: 30px;">
-                                                                        <i class="fas fa-plus"></i>
-                                                                    </button> 
-                                                                </div>
-                                                            </div>
-                                                        </form>
-                                                    @else
-                                                        Unlimited
-                                                    @endif
-                                                </td>
-                                                <td class="text-center">
-                                                    <!-- Reset Password Button with Icon -->
-                                                    <a href="{{ route('admin.resetpassword', $user->id) }}" class="btn btn-warning btn-sm" title="Reset Password">
-                                                        <i class="fas fa-key"></i>
-                                                    </a>
-
-                                                    <!-- Delete Button with Icon -->
-                                                    <form action="{{ route('admin.deleteuser', $user->id) }}" method="POST" class="d-inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger btn-sm" title="Delete User">
-                                                            <i class="fas fa-trash-alt"></i>
-                                                        </button>
-                                                    </form>
-                                                </td>
-
+                                                <th class="text-center">Name</th>
+                                                <th class="text-center">Email</th>
+                                                <th class="text-center">Role</th>
+                                                <th class="text-center">Created At</th>
+                                                <th class="text-center">Quota</th>
+                                                <th class="text-center">Actions</th>
                                             </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($users as $user)
+                                                <tr>
+                                                    <td class="text-left">{{ $user->name }}</td>
+                                                    <td class="text-left">{{ $user->email }}</td>
+                                                    <td class="text-center">{{ $user->role }}</td>
+                                                    <td class="text-center">{{ $user->created_at->format('d-m-Y') }}</td>
+                                                    <td class="text-center">
+                                                        @if ($settings->quota_enabled)
+                                                            <form action="{{ route('admin.updatequota', $user->id) }}" method="POST" 
+                                                                class="d-inline d-flex flex-column align-items-center">
+                                                                @csrf
+                                                                @method('PATCH')
+
+                                                                <!-- Create a 2-column layout under "Quota" column -->
+                                                                <div class="d-flex w-100 justify-content-center align-items-center">
+                                                                    <!-- Left Column: Quota Number -->
+                                                                    <div class="fw-bold text-center" style="width: 50px;">
+                                                                        {{ $user->quota }}
+                                                                    </div>
+
+                                                                    <!-- Right Column: Input & Buttons (Inline) -->
+                                                                    <div class="d-flex align-items-center gap-1">
+                                                                        <!-- Minus Button (Rounded) -->
+                                                                        <button type="submit" name="action" value="decrease" 
+                                                                                class="btn btn-danger btn-sm rounded-circle d-flex align-items-center justify-content-center"
+                                                                                style="width: 30px; height: 30px;">
+                                                                            <i class="fas fa-minus"></i>
+                                                                        </button>
+
+                                                                        <!-- Compact Input for Quota Adjustment -->
+                                                                        <input type="number" name="amount" class="form-control form-control-sm text-center"
+                                                                            style="width: 50px; padding: 2px;" min="1" placeholder="0" required>
+
+                                                                        <!-- Plus Button (Rounded) -->
+                                                                        <button type="submit" name="action" value="increase" 
+                                                                                class="btn btn-success btn-sm rounded-circle d-flex align-items-center justify-content-center"
+                                                                                style="width: 30px; height: 30px;">
+                                                                            <i class="fas fa-plus"></i>
+                                                                        </button> 
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        @else
+                                                            Unlimited
+                                                        @endif
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <!-- Reset Password Button with Icon -->
+                                                        <a href="{{ route('admin.resetpassword', $user->id) }}" class="btn btn-warning btn-sm" title="Reset Password">
+                                                            <i class="fas fa-key"></i>
+                                                        </a>
+
+                                                        <!-- Delete Button with SweetAlert2 -->
+                                                        <form action="{{ route('admin.deleteuser', $user->id) }}" method="POST" class="d-inline delete-user-form">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="button" class="btn btn-danger btn-sm show-delete-user-confirm" title="Delete User">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
 
                                 <!-- Pagination Links -->
                                 <div class="d-flex justify-content-center mt-3">
@@ -170,3 +171,30 @@
         </div>
     </div>
 </x-admin-layout>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const deleteUserButtons = document.querySelectorAll('.show-delete-user-confirm');
+
+        deleteUserButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const form = this.closest('form');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This user will be permanently deleted!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete user',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>

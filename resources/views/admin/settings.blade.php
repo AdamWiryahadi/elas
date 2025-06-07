@@ -119,12 +119,13 @@
                                             <td class="text-left">{{ $holiday->name }}</td>
                                             <td class="text-center">{{ $holiday->date }}</td>
                                             <td class="text-center">
-                                                <form action="{{ route('admin.holidays.delete', $holiday->id) }}" method="POST" style="display: inline-block;">
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $holiday->id }})">
+                                                    <i class="fas fa-trash-alt"></i> Delete
+                                                </button>
+
+                                                <form id="delete-form-{{ $holiday->id }}" action="{{ route('admin.holidays.delete', $holiday->id) }}" method="POST" style="display: none;">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm">
-                                                        <i class="fas fa-trash-alt"></i> Delete
-                                                    </button>
                                                 </form>
                                             </td>
                                         </tr>
@@ -150,3 +151,22 @@
         justify-content: center;
     }
 </style>
+
+<script>
+    function confirmDelete(id) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This holiday will be permanently deleted.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('delete-form-' + id).submit();
+            }
+        });
+    }
+</script>
+
