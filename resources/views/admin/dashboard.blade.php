@@ -117,38 +117,40 @@
                             <h3 class="card-title">Staff Leave Quotas</h3>
                         </div>
                         <div class="card-body">
-                            <table class="table table-bordered table-striped">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th class="text-center">Name</th>
-                                        <th class="text-center">Total Leave Taken</th>
-                                        <th class="text-center">Remaining Quota</th>
-                                        <th class="text-center">Quota Limit</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($users as $user)
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead class="thead-light">
                                         <tr>
-                                            <td class="text-left">{{ $user->name }}</td>
-                                            <td class="text-center">{{ $user->leave_taken ?? 0 }}</td> <!-- Summed from leave_requests -->
-                                            <td class="text-center">
-                                                @if ($settings->quota_enabled)
-                                                    {{ $user->remaining_quota }}
-                                                @else
-                                                    Unlimited
-                                                @endif
-                                            </td> <!-- Taken directly from users.quota -->
-                                            <td class="text-center">
-                                                @if ($settings->quota_enabled)
-                                                    {{ $user->quota_limit }}
-                                                @else
-                                                    Unlimited
-                                                @endif
-                                            </td> <!-- Taken from settings.quota_limit -->
+                                            <th class="text-center">Name</th>
+                                            <th class="text-center">Total Leave Taken</th>
+                                            <th class="text-center">Remaining Quota</th>
+                                            <th class="text-center">Quota Limit</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($users as $user)
+                                            <tr>
+                                                <td class="text-left">{{ $user->name }}</td>
+                                                <td class="text-center">{{ $user->leave_taken ?? 0 }}</td> <!-- Summed from leave_requests -->
+                                                <td class="text-center">
+                                                    @if ($settings->quota_enabled)
+                                                        {{ $user->remaining_quota }}
+                                                    @else
+                                                        Unlimited
+                                                    @endif
+                                                </td> <!-- Taken directly from users.quota -->
+                                                <td class="text-center">
+                                                    @if ($settings->quota_enabled)
+                                                        {{ $user->quota_limit }}
+                                                    @else
+                                                        Unlimited
+                                                    @endif
+                                                </td> <!-- Taken from settings.quota_limit -->
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
