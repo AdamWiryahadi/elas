@@ -73,7 +73,7 @@
             @endforeach
         </tbody>
     </table>
-<div class="table-responsive">
+<div>
 <script>
     document.querySelectorAll('form.swal-confirm').forEach(form => {
         form.addEventListener('submit', function(e) {

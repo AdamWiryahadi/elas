@@ -5,5 +5,4 @@
     </div>
     <!-- Default to the left -->
     <strong>&copy;2025 <a href="https://www.enetech.com.my/">ENETECH SDN BHD</a>.</strong> Empowering Tommorrow's Technology Today.
-  </footer>
-</div>
+</footer>
